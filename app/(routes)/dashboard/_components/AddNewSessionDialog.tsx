@@ -16,11 +16,15 @@ import axios from "axios"
 
 
 import React, { useState } from 'react'
+import DoctorAgentCard, { doctorAgent } from "./DoctorAgentCard"
+import { Loader2 } from "lucide-react"
+import SuggestedDoctorCard from "./SuggestedDoctorCard"
 
 function AddNewSessionDialog() {
 
     const [note,setNote] = useState<string>();
     const [loading,setLoading] = useState(false);
+    const [suggestedDoctors,setSuggestedDoctors] = useState<doctorAgent[]>([]);
 
     const onClickNext = async ()=> {
 
@@ -30,6 +34,7 @@ function AddNewSessionDialog() {
       });
 
       console.log(result.data);
+      setSuggestedDoctors(result.data)
       setLoading(false);
       
     }
@@ -37,14 +42,15 @@ function AddNewSessionDialog() {
   return (
     <div>
       <Dialog>
-  <DialogTrigger>
+  <DialogTrigger asChild>
     <Button className='mt-3'>+ Start a Consultation</Button>
   </DialogTrigger>
   <DialogContent>
     <DialogHeader>
       <DialogTitle>Add Basic Details</DialogTitle>
       <DialogDescription asChild>
-       <div>
+
+       { !suggestedDoctors ? <div>
         <h2>Add Symptoms or Any Other Details</h2>
         <Textarea 
         className="mt-1 h-[200px]" 
@@ -52,14 +58,29 @@ function AddNewSessionDialog() {
         onChange={(e)=>setNote(e.target.value)}
         />
        </div>
+        :
+       <div className="grid grid-cols-3 gap-5">
+        {/* suggestedDoctors */}
+        { suggestedDoctors.map((doctor,index)=>(
+          <SuggestedDoctorCard doctorAgent={doctor} key={index}/>
+        )) }
+       </div>
+       }
       </DialogDescription>
     </DialogHeader>
     <DialogFooter>
-        <DialogClose>
+        <DialogClose asChild>
             <Button variant={'outline'}>Cancel</Button>
         </DialogClose>
         
-        <Button disabled={!note} onClick={()=>onClickNext()} >Next <IconArrowRight /> </Button>
+        { !suggestedDoctors ? <Button disabled={!note || loading} onClick={()=>onClickNext()} >
+          
+          Next { loading ? <Loader2 className="animate-spin" /> :  <IconArrowRight />  }
+         
+          </Button> 
+          : 
+          <Button>Start Consultation</Button>
+          }
     </DialogFooter>
   </DialogContent>
 </Dialog>
