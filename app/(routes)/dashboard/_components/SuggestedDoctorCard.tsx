@@ -3,15 +3,17 @@ import { doctorAgent } from './DoctorAgentCard'
 import Image from 'next/image'
 
 type props = {
-    doctorAgent : doctorAgent
+    doctorAgent : doctorAgent,
+    setSelectedDoctor: any,
+    selectedDoctor: doctorAgent
 }
 
 
 
-function SuggestedDoctorCard({doctorAgent}:props) {
+function SuggestedDoctorCard({doctorAgent, setSelectedDoctor, selectedDoctor}:props) {
    
   return (
-    <div className='flex flex-col items-center justify-between border rounded-2xl shadow'>
+    <div className={`flex flex-col items-center justify-between border rounded-2xl shadow p-5 hover:border-blue-500 cursor-pointer ${selectedDoctor?.id == doctorAgent?.id && 'border-blue-500'} `} onClick={()=> setSelectedDoctor(doctorAgent)}>
       <Image
       src={doctorAgent.image}
       alt={doctorAgent.specialist}
@@ -19,8 +21,8 @@ function SuggestedDoctorCard({doctorAgent}:props) {
       height={70} 
       className='w-[50px] h-[50px] rounded-4xl object-cover'
       />
-      <h2 className='font-bold'>{doctorAgent.specialist}</h2>
-      <p className='text-xs'>{doctorAgent.description}</p>
+      <h2 className='font-bold text-center text-sm'>{doctorAgent.specialist}</h2>
+      <p className='text-xs text-center line-clamp-2'>{doctorAgent.description}</p>
     </div>
   )
 }

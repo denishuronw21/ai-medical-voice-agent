@@ -24,7 +24,8 @@ function AddNewSessionDialog() {
 
     const [note,setNote] = useState<string>();
     const [loading,setLoading] = useState(false);
-    const [suggestedDoctors,setSuggestedDoctors] = useState<doctorAgent[]>([]);
+    const [suggestedDoctors,setSuggestedDoctors] = useState<doctorAgent[]>();
+    const [selectedDoctor,setSelectedDoctor] = useState<doctorAgent>();
 
     const onClickNext = async ()=> {
 
@@ -39,10 +40,27 @@ function AddNewSessionDialog() {
       
     }
 
+    const onStartConsultation = async ()=> {
+      setLoading(true);
+      //Save all info to Database
+      const result = await axios.post('/api/session-chat',{
+        notes: note,
+        selectedDoctor: selectedDoctor
+      });
+
+       console.log(result.data);
+       if(result.data?.sessionId){
+        console.log(result.data.sessionId);
+        //Route new Conversation Screen
+       }
+      setLoading(false);
+
+    }
+
   return (
     <div>
       <Dialog>
-  <DialogTrigger asChild>
+  <DialogTrigger>
     <Button className='mt-3'>+ Start a Consultation</Button>
   </DialogTrigger>
   <DialogContent>
@@ -59,17 +77,22 @@ function AddNewSessionDialog() {
         />
        </div>
         :
+        <div>
+          <h2>Select a doctor</h2>
        <div className="grid grid-cols-3 gap-5">
         {/* suggestedDoctors */}
         { suggestedDoctors.map((doctor,index)=>(
-          <SuggestedDoctorCard doctorAgent={doctor} key={index}/>
+          <SuggestedDoctorCard doctorAgent={doctor} key={index} setSelectedDoctor={()=>setSelectedDoctor(doctor)}
+          //@ts-ignore
+          selectedDoctor={selectedDoctor} />
         )) }
+       </div>
        </div>
        }
       </DialogDescription>
     </DialogHeader>
     <DialogFooter>
-        <DialogClose asChild>
+        <DialogClose>
             <Button variant={'outline'}>Cancel</Button>
         </DialogClose>
         
@@ -79,7 +102,7 @@ function AddNewSessionDialog() {
          
           </Button> 
           : 
-          <Button>Start Consultation</Button>
+          <Button disabled={loading || !selectedDoctor } onClick={()=> onStartConsultation()}>Start Consultation { loading ? <Loader2 className="animate-spin" /> :  <IconArrowRight /> }</Button>
           }
     </DialogFooter>
   </DialogContent>

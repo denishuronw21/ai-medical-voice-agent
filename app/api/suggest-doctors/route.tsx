@@ -8,7 +8,7 @@ export async function POST(req:NextRequest){
 
    try {
      const completion = await openai.chat.completions.create({
-    model: "google/gemini-2.5-flash-image-preview:free",
+    model: "deepseek/deepseek-chat-v3.1:free",
     messages: [
         { role: "system", content: JSON.stringify(AIDoctorAgents)},
       { role: "user", content: "User Notes/Symptoms:"+notes+", Depends on user notes and symptoms, Please suggest list of doctors , Return object in JSON only" }
